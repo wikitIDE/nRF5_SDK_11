@@ -1,0 +1,28 @@
+GNU_INSTALL_ROOT := /Users/minqi478/Downloads/gcc-arm-none-eabi-4_9-2015q3
+GNU_VERSION := 4.9.3
+GNU_PREFIX := arm-none-eabi
+GDB_PORT_NUMBER := 9992
+
+FLASH_START_ADDR = $(shell $(OBJDUMP) -h         $(OUTPUT_BINARY_DIRECTORY)/$(OUTPUT_FILENAME).out -j .text | grep .text | awk '{print $$4}')
+
+JLINK_OPTS = -device nrf51822 -if swd -speed 4000
+JLINK_GDB_OPTS = -noir
+JLINK = JLinkExe $(JLINK_OPTS)
+JLINKD_GDB = JLinkGDBServer $(JLINK_GDB_OPTS)
+
+flash-jlink: flash.jlink
+	$(JLINK) flash.jlink
+
+flash.jlink:
+	printf "loadbin $(OUTPUT_BINARY_DIRECTORY)/$(OUTPUT_FILENAME).bin $(FLASH_START_ADDR)\nr\ng\nexit\n" > flash.jlink
+
+erase-all: erase-all.jlink
+	$(JLINK) erase-all.jlink
+
+erase-all.jlink:
+	printf "w4 4001e504 2\nw4 4001e50c 1\nsleep 100\nr\nexit\n" > erase-all.jlink
+
+run-debug:
+	$(JLINKD_GDB) $(JLINK_OPTS) $(JLINK_GDB_OPTS) -port $(GDB_PORT_NUMBER)
+
+.PHONY:flash-jlink flash.jlink erase-all erase-all.jlink run-debug

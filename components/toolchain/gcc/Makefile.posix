@@ -1,0 +1,4 @@
+GNU_INSTALL_ROOT := /Users/minqi478/Downloads/gcc-arm-none-eabi-4_9-2015q3
+GNU_VERSION := 4.9.3
+GNU_PREFIX := arm-none-eabi
+GDB_PORT_NUMBER := 9992
